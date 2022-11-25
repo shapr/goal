@@ -1,13 +1,16 @@
 package main
 
 import "fmt"
-import "github.com/go-fed/activity/pub"
-import "github.com/go-fed/activity/streams"
+import . "github.com/go-fed/activity/pub"
+import . "github.com/go-fed/activity/streams"
+import "github.com/go-fed/activity/streams/vocab"
+import "net/http"
+import "context"
+import "sync"
+import "net/url"
+import "errors"
+import "time"
 
-// func main() {
-
-//		fmt.Print("hello world")
-//	}
 func main() {
 	s := &myService{}
 	db := &myDB{
@@ -15,17 +18,18 @@ func main() {
 		locks:    &sync.Map{},
 		hostname: "localhost",
 	}
-	actor := pub.NewFederatingActor( /* CommonBehavior */ s,
+	//actor := NewFederatingActor( /* CommonBehavior */ s,
+	_ = NewFederatingActor( /* CommonBehavior */ s,
 		/* FederatingProtocol */ s,
 		/* Database */ db,
 		/* Clock */ s)
 }
 
 // stub it out!
-func NewFederatingActor(c CommonBehavior,
-	s2s FederatingProtocol,
-	db Database,
-	clock Clock) FederatingActor
+//func NewFederatingActor(c CommonBehavior,
+//	s2s FederatingProtocol,
+//	db Database,
+//	clock Clock) FederatingActor
 
 type myService struct{}
 
@@ -51,7 +55,7 @@ func (*myService) GetOutbox(c context.Context,
 
 func (*myService) NewTransport(c context.Context,
 	actorBoxIRI *url.URL,
-	gofedAgent string) (t pub.Transport, err error) {
+	gofedAgent string) (t Transport, err error) {
 	// TODO
 	return
 }
@@ -194,7 +198,7 @@ func (m *myDB) Create(c context.Context,
 	// Create a payload in our in-memory map. The thing could be a local or
 	// a federated peer's data. We can re-use the `Owns` call to set the
 	// metadata on our `content`.
-	id, err := pub.GetId(asType)
+	id, err := GetId(asType)
 	if err != nil {
 		return err
 	}
@@ -254,7 +258,7 @@ func (m *myDB) InboxContains(c context.Context,
 	// if the element's id matches the desired id.
 	for iter := oi.Begin(); iter != oi.End(); iter = iter.Next() {
 		var iterId *url.URL
-		iterId, err = pub.ToId(iter)
+		iterId, err = ToId(iter)
 		if err != nil {
 			return
 		}
@@ -365,7 +369,7 @@ func (m *myDB) Followers(c context.Context,
 	// Note: at this point f is not the OrderedCollection itself yet. It is
 	// an opaque box (it could be an IRI, an OrderedCollection, or something
 	// extending an OrderedCollection).
-	followersId, err := pub.ToId(f)
+	followersId, err := ToId(f)
 	if err != nil {
 		return
 	}
