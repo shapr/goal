@@ -1,20 +1,21 @@
 package main
 
 import "fmt"
-import "github.com/go-fed/activity"
+import "github.com/go-fed/activity/pub"
+import "github.com/go-fed/activity/streams"
 
 // func main() {
 
-//	fmt.Print("hello world")
-// }
+//		fmt.Print("hello world")
+//	}
 func main() {
 	s := &myService{}
 	db := &myDB{
-		content: &sync.Map{},
-		locks: &sync.Map{},
+		content:  &sync.Map{},
+		locks:    &sync.Map{},
 		hostname: "localhost",
 	}
-	actor := pub.NewFederatingActor(/* CommonBehavior */ s,
+	actor := pub.NewFederatingActor( /* CommonBehavior */ s,
 		/* FederatingProtocol */ s,
 		/* Database */ db,
 		/* Clock */ s)
@@ -26,14 +27,14 @@ func NewFederatingActor(c CommonBehavior,
 	db Database,
 	clock Clock) FederatingActor
 
-type myService struct {}
+type myService struct{}
+
 func (*myService) AuthenticateGetInbox(c context.Context,
 	w http.ResponseWriter,
 	r *http.Request) (out context.Context, authenticated bool, err error) {
 	// TODO
 	return
 }
-
 
 func (*myService) AuthenticateGetOutbox(c context.Context,
 	w http.ResponseWriter,
@@ -108,7 +109,6 @@ func (*myService) GetInbox(c context.Context,
 	// TODO
 	return nil, nil
 }
-
 
 type myDB struct {
 	// The content of our app, keyed by ActivityPub ID.
@@ -202,8 +202,8 @@ func (m *myDB) Create(c context.Context,
 	if err != nil {
 		return err
 	}
-	con = &content {
-		data: asType,
+	con = &content{
+		data:    asType,
 		isLocal: owns,
 	}
 	m.content.Store(id.String(), con)
