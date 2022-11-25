@@ -1,8 +1,8 @@
 package main
 
-import "fmt"
+import _ "fmt"
 import . "github.com/go-fed/activity/pub"
-import . "github.com/go-fed/activity/streams"
+import _ "github.com/go-fed/activity/streams"
 import "github.com/go-fed/activity/streams/vocab"
 import "net/http"
 import "context"
@@ -179,6 +179,7 @@ func (m *myDB) Exists(c context.Context,
 	return
 }
 
+/*
 func (m *myDB) Get(c context.Context,
 	id *url.URL) (value vocab.Type, err error) {
 	// Our goal is to return what we have at that `id`. Returns an error if
@@ -323,73 +324,81 @@ func (m *myDB) ActorForOutbox(c context.Context,
 	// that outbox. Will only be used for actors on this local server.
 	// Implementation left as an exercise to the reader.
 }
+*/
 
 func (m *myDB) ActorForInbox(c context.Context,
 	inboxIRI *url.URL) (actorIRI *url.URL, err error) {
 	// Given the `inboxIRI`, determine the IRI of the actor that owns
 	// that inbox. Will only be used for actors on this local server.
 	// Implementation left as an exercise to the reader.
+	return
 }
 
+/*
 func (m *myDB) OutboxForInbox(c context.Context,
-	inboxIRI *url.URL) (outboxIRI *url.URL, err error) {
-	// Given the `inboxIRI`, determine the IRI of the outbox owned
-	// by the same actor that owns the inbox. Will only be used for actors
-	// on this local server. Implementation left as an exercise to the
-	// reader.
-}
+
+		inboxIRI *url.URL) (outboxIRI *url.URL, err error) {
+		// Given the `inboxIRI`, determine the IRI of the outbox owned
+		// by the same actor that owns the inbox. Will only be used for actors
+		// on this local server. Implementation left as an exercise to the
+		// reader.
+	}
 
 func (m *myDB) NewID(c context.Context,
-	t vocab.Type) (id *url.URL, err error) {
-	// Generate a new `id` for the ActivityStreams object `t`.
 
-	// You can be fancy and put different types authored by different folks
-	// along different paths. Or just generate a GUID. Implementation here
-	// is left as an exercise for the reader.
-}
+		t vocab.Type) (id *url.URL, err error) {
+		// Generate a new `id` for the ActivityStreams object `t`.
+
+		// You can be fancy and put different types authored by different folks
+		// along different paths. Or just generate a GUID. Implementation here
+		// is left as an exercise for the reader.
+	}
 
 func (m *myDB) Followers(c context.Context,
-	actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
-	// Get the followers collection from the actor with `actorIRI`.
 
-	// getPerson is a helper method that returns an actor on this server
-	// with a Person ActivityStreams type. It is not implemented in this tutorial.
-	var person vocab.ActivityStreamsPerson
-	person, err = m.getPerson(actorIRI)
-	if err != nil {
-		return
+		actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
+		// Get the followers collection from the actor with `actorIRI`.
+
+		// getPerson is a helper method that returns an actor on this server
+		// with a Person ActivityStreams type. It is not implemented in this tutorial.
+		var person vocab.ActivityStreamsPerson
+		person, err = m.getPerson(actorIRI)
+		if err != nil {
+			return
+		}
+		// Let's get their followers property, ensure it exists, and then
+		// fetch it with a familiar helper method.
+		f := person.GetActivityStreamsFollowers()
+		if f == nil {
+			err = errors.New("no followers collection")
+			return
+		}
+		// Note: at this point f is not the OrderedCollection itself yet. It is
+		// an opaque box (it could be an IRI, an OrderedCollection, or something
+		// extending an OrderedCollection).
+		followersId, err := ToId(f)
+		if err != nil {
+			return
+		}
+		return m.getOrderedCollection(followersId)
 	}
-	// Let's get their followers property, ensure it exists, and then
-	// fetch it with a familiar helper method.
-	f := person.GetActivityStreamsFollowers()
-	if f == nil {
-		err = errors.New("no followers collection")
-		return
-	}
-	// Note: at this point f is not the OrderedCollection itself yet. It is
-	// an opaque box (it could be an IRI, an OrderedCollection, or something
-	// extending an OrderedCollection).
-	followersId, err := ToId(f)
-	if err != nil {
-		return
-	}
-	return m.getOrderedCollection(followersId)
-}
 
 func (m *myDB) Following(c context.Context,
-	actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
-	// Get the following collection from the actor with `actorIRI`.
 
-	// Implementation is similar to `Followers`. See `Followers`.
-}
+		actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
+		// Get the following collection from the actor with `actorIRI`.
+
+		// Implementation is similar to `Followers`. See `Followers`.
+	}
 
 func (m *myDB) Liked(c context.Context,
-	actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
-	// Get the liked collection from the actor with `actorIRI`.
 
-	// Implementation is similar to `Followers`. See `Followers`.
-}
+		actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
+		// Get the liked collection from the actor with `actorIRI`.
 
+		// Implementation is similar to `Followers`. See `Followers`.
+	}
+*/
 func (*myService) Now() time.Time {
 	return time.Now()
 }
