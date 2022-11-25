@@ -179,19 +179,18 @@ func (m *myDB) Exists(c context.Context,
 	return
 }
 
-/*
 func (m *myDB) Get(c context.Context,
 	id *url.URL) (value vocab.Type, err error) {
 	// Our goal is to return what we have at that `id`. Returns an error if
 	// not found.
-	iCon, exists = m.content.Load(id.String())
+	iCon, exists := m.content.Load(id.String())
 	if !exists {
 		err = errors.New("Get failed")
 		return
 	}
 	// Extract the data from our `content` type.
 	con := iCon.(*content)
-	return con.data
+	return con.data, nil
 }
 
 func (m *myDB) Create(c context.Context,
@@ -203,11 +202,11 @@ func (m *myDB) Create(c context.Context,
 	if err != nil {
 		return err
 	}
-	owns, err := m.Owns(id)
+	owns, err := m.Owns(c, id)
 	if err != nil {
 		return err
 	}
-	con = &content{
+	con := &content{
 		data:    asType,
 		isLocal: owns,
 	}
@@ -229,7 +228,7 @@ func (m *myDB) Update(c context.Context,
 func (m *myDB) Delete(c context.Context,
 	id *url.URL) error {
 	// Remove a payload in our in-memory map.
-	m.Delete(id.String())
+	m.Delete(c, id)
 	return nil
 }
 
@@ -243,8 +242,8 @@ func (m *myDB) InboxContains(c context.Context,
 	var oc vocab.ActivityStreamsOrderedCollection
 	// getOrderedCollection is a helper method to fetch an
 	// OrderedCollection. It is not implemented in this tutorial, and uses
-	// the map m.content to do the lookup.
-	oc, err = m.getOrderedCollection(inbox)
+	// the map m.contains to do the lookup.
+	// oc, err = m.getOrderedCollection(inbox)
 	if err != nil {
 		return
 	}
@@ -280,7 +279,8 @@ func (m *myDB) GetInbox(c context.Context,
 	// uses the map m.content to do the lookup and any conversions if
 	// needed. The database can get fancy and use query parameters in the
 	// `inboxIRI` to paginate appropriately.
-	return m.getOrderedCollectionPage(inboxIRI)
+	// return m.getOrderedCollectionPage(inboxIRI)
+	return
 }
 
 func (m *myDB) SetInbox(c context.Context,
@@ -293,29 +293,32 @@ func (m *myDB) SetInbox(c context.Context,
 	// getOrderedCollection is a helper method to fetch an
 	// OrderedCollection. It is not implemented in this tutorial, and
 	// uses the map m.content to do the lookup.
-	storedInbox, err := m.getOrderedCollection(inboxIRI)
-	if err != nil {
-		return err
-	}
+	//storedInbox, err := m.getOrderedCollection(inbox)
+	//if err != nil {
+	//	return err
+	//}
 	// applyDiffOrderedCollection is a helper method to apply changes due
 	// to an edited OrderedCollectionPage. Implementation is left as an
 	// exercise for the reader.
-	updatedInbox := m.applyDiffOrderedCollection(storedInbox, inbox)
+	//updatedInbox := m.applyDiffOrderedCollection(storedInbox, inbox)
 
 	// saveToContent is a helper method to save an
 	// ActivityStream type. Implementation is left as an exercise for the
 	// reader.
-	return m.saveToContent(updatedInbox)
+	//return m.saveToContent(updatedInbox)
+	return nil
 }
 
 func (m *myDB) GetOutbox(c context.Context,
 	inboxIRI *url.URL) (inbox vocab.ActivityStreamsOrderedCollectionPage, err error) {
 	// Similar to `GetInbox`, but for the outbox. See `GetInbox`.
+	return nil, nil
 }
 
 func (m *myDB) SetOutbox(c context.Context,
 	inbox vocab.ActivityStreamsOrderedCollectionPage) error {
 	// Similar to `SetInbox`, but for the outbox. See `SetInbox`.
+	return nil
 }
 
 func (m *myDB) ActorForOutbox(c context.Context,
@@ -323,82 +326,88 @@ func (m *myDB) ActorForOutbox(c context.Context,
 	// Given the `outboxIRI`, determine the IRI of the actor that owns
 	// that outbox. Will only be used for actors on this local server.
 	// Implementation left as an exercise to the reader.
+	return nil, nil
 }
-*/
 
 func (m *myDB) ActorForInbox(c context.Context,
 	inboxIRI *url.URL) (actorIRI *url.URL, err error) {
 	// Given the `inboxIRI`, determine the IRI of the actor that owns
 	// that inbox. Will only be used for actors on this local server.
 	// Implementation left as an exercise to the reader.
-	return
+	return nil, nil
 }
 
-/*
 func (m *myDB) OutboxForInbox(c context.Context,
 
-		inboxIRI *url.URL) (outboxIRI *url.URL, err error) {
-		// Given the `inboxIRI`, determine the IRI of the outbox owned
-		// by the same actor that owns the inbox. Will only be used for actors
-		// on this local server. Implementation left as an exercise to the
-		// reader.
-	}
+	inboxIRI *url.URL) (outboxIRI *url.URL, err error) {
+	// Given the `inboxIRI`, determine the IRI of the outbox owned
+	// by the same actor that owns the inbox. Will only be used for actors
+	// on this local server. Implementation left as an exercise to the
+	// reader.
+	return nil, nil
+}
 
 func (m *myDB) NewID(c context.Context,
 
-		t vocab.Type) (id *url.URL, err error) {
-		// Generate a new `id` for the ActivityStreams object `t`.
+	t vocab.Type) (id *url.URL, err error) {
+	// Generate a new `id` for the ActivityStreams object `t`.
 
-		// You can be fancy and put different types authored by different folks
-		// along different paths. Or just generate a GUID. Implementation here
-		// is left as an exercise for the reader.
-	}
+	// You can be fancy and put different types authored by different folks
+	// along different paths. Or just generate a GUID. Implementation here
+	// is left as an exercise for the reader.
+	return
+}
 
 func (m *myDB) Followers(c context.Context,
 
-		actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
-		// Get the followers collection from the actor with `actorIRI`.
+	actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
+	// Get the followers collection from the actor with `actorIRI`.
 
-		// getPerson is a helper method that returns an actor on this server
-		// with a Person ActivityStreams type. It is not implemented in this tutorial.
-		var person vocab.ActivityStreamsPerson
-		person, err = m.getPerson(actorIRI)
-		if err != nil {
-			return
-		}
-		// Let's get their followers property, ensure it exists, and then
-		// fetch it with a familiar helper method.
-		f := person.GetActivityStreamsFollowers()
-		if f == nil {
-			err = errors.New("no followers collection")
-			return
-		}
-		// Note: at this point f is not the OrderedCollection itself yet. It is
-		// an opaque box (it could be an IRI, an OrderedCollection, or something
-		// extending an OrderedCollection).
-		followersId, err := ToId(f)
-		if err != nil {
-			return
-		}
-		return m.getOrderedCollection(followersId)
+	// getPerson is a helper method that returns an actor on this server
+	// with a Person ActivityStreams type. It is not implemented in this tutorial.
+	var person vocab.ActivityStreamsPerson
+	//	person, err = m.getPerson(actorIRI)
+	err = nil
+
+	if err != nil {
+		return
 	}
+	// Let's get their followers property, ensure it exists, and then
+	// fetch it with a familiar helper method.
+	f := person.GetActivityStreamsFollowers()
+	if f == nil {
+		err = errors.New("no followers collection")
+		return
+	}
+	// Note: at this point f is not the OrderedCollection itself yet. It is
+	// an opaque box (it could be an IRI, an OrderedCollection, or something
+	// extending an OrderedCollection).
+	_, err = ToId(f)
+	if err != nil {
+		return
+	}
+	return nil, nil
+	// return m.getOrderedCollection(followersId)
+}
 
 func (m *myDB) Following(c context.Context,
 
-		actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
-		// Get the following collection from the actor with `actorIRI`.
+	actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
+	// Get the following collection from the actor with `actorIRI`.
 
-		// Implementation is similar to `Followers`. See `Followers`.
-	}
+	// Implementation is similar to `Followers`. See `Followers`.
+	return
+}
 
 func (m *myDB) Liked(c context.Context,
 
-		actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
-		// Get the liked collection from the actor with `actorIRI`.
+	actorIRI *url.URL) (followers vocab.ActivityStreamsCollection, err error) {
+	// Get the liked collection from the actor with `actorIRI`.
 
-		// Implementation is similar to `Followers`. See `Followers`.
-	}
-*/
+	// Implementation is similar to `Followers`. See `Followers`.i
+	return
+}
+
 func (*myService) Now() time.Time {
 	return time.Now()
 }
